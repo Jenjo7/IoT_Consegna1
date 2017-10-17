@@ -27,6 +27,8 @@
 //Definisco macro utili al sistema
 #define TIME_TO_GUESS 5000000      //tempo a disposizione del giocatore per indovinare
 #define FREQ 500                    //tempo che il led di inizio rimane acceso o spento
+#define SET_LEV 128
+#define MAX_DIFF 8
 #define INIT 0
 #define FIRST 1
 #define SECOND 2
@@ -48,6 +50,7 @@ int state = INIT;
 int sequenceToGuess[SIZE];
 int index = INIT;
 int difficult;
+int freq;
 
 void setup() {
   Serial.begin(9600);
@@ -79,14 +82,14 @@ void loop() {
 void init_condition() {
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
   Timer1.stop();
-  difficult = pot->readValue();
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
+    setDifficult();
     ledw->switchOn();
     Serial.println("Fermo qui");
-    delay(FREQ);
+    delay(freq);
     ledw->switchOff();
-    delay(FREQ);   
+    delay(freq);   
   }
 }
 //Confronto la sequenza con i bottoni che premo  io, uno ad uno
@@ -151,6 +154,11 @@ void points() {
 //funzione vuota
 void empty() {
   
+}
+
+void setDifficult() {
+  freq = pot->readValue();
+  difficult = MAX_DIFF - freq/SET_LEV;
 }
 
 void lose() {
