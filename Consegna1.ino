@@ -63,7 +63,7 @@ void setup() {
   pot = new Potentiometer(POT);
   btn1->att_int(firstState);
   
-  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
+  Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
 }
 //Note: ancora non gestico i punti e il potenziometro
@@ -165,6 +165,14 @@ void points() {
 //funzione vuota
 void empty() {
   
+}
+
+void lose() {
+  btn1->att_int(firstState);
+  Serial.println("GameOver");
+  index = INIT;
+  lengthOfSequence = INIT;
+  state = INIT;
 }
 
 void firstState() {
