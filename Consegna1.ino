@@ -63,25 +63,17 @@ void setup() {
   btn1->att_int(firstState);  
   Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
-  Timer1.stop();     
-  Timer1.restart();
+//  Timer1.stop();     
+//  Timer1.restart();
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
-  
+  Serial.println(Timer1.read()/1000000);
   init_condition();                           //Primo stato
   btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
   showSequence();                             //Secondo stato
   guessSequence();                            //Terzo stato
-  //state == SECOND ? guessSequence() : reset();
- 
   Serial.println("Uscito dal guessSequence");
-//  Serial.print("index: ");
-//  Serial.println(index);
-//  Serial.print("lengthOfSequence: ");
-//  Serial.println(lengthOfSequence);
-//  Serial.print("state: ");
-//  Serial.println(state);
 }
 
 void init_condition() {
@@ -100,15 +92,6 @@ void init_condition() {
 //Confronto la sequenza con i bottoni che premo  io, uno ad uno
 void compareToSequence(int num) {
   Serial.println("compareToSequence");
-//  Serial.print("Sequenza di index: ");
-//  Serial.println(sequenceToGuess[index]);
-//  Serial.print("Numero ");
-//  Serial.println(num);
-//  Serial.print("index: ");
-//  Serial.println(index);
-//  Serial.print("lengthOfSequence: ");
-//  Serial.println(lengthOfSequence);
-//  
   digitalWrite(num, HIGH);
   delay(BOUCING);
   digitalWrite(num, LOW);
@@ -156,18 +139,13 @@ void guess() {
 }
 
 void points() {
-   Timer1.stop();
+  Timer1.stop();
   Timer1.restart();
- 
   Serial.println("punti");
   Serial.print("\n");
   state = FIRST;
   index = INIT;
-  
-//  for(int i = 0; i < 10; i++) {
-//    delay(1000);
-//    Serial.println(Timer1.read()/1000);
-//  }
+
   //Timer1.setPeriod(TIME_TO_GUESS);  //Non fa un reset ma inizializza un nuovo periodo...genera anomalie nel sistema ovvero:
 }                                     //allo scadere del "vecchio periodo" si accende un led dei tre della sequenza, da quel momento si accende LEDW
 //funzione vuota
