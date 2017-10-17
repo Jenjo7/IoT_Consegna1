@@ -27,7 +27,6 @@
 //Definisco macro utili al sistema
 #define TIME_TO_GUESS 5000000      //tempo a disposizione del giocatore per indovinare
 #define FREQ 500                    //tempo che il led di inizio rimane acceso o spento
-#define LOSE 3
 #define INIT 0
 #define FIRST 1
 #define SECOND 2
