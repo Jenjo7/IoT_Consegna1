@@ -139,7 +139,7 @@ void showSequence() {
 
 void guessSequence() {
   Timer1.resume();
-  while(state == SECOND && index < lengthOfSequence ) {  // 
+  while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
   }
