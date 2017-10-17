@@ -26,7 +26,6 @@
 
 //Definisco macro utili al sistema
 #define TIME_TO_GUESS 5000000      //tempo a disposizione del giocatore per indovinare
-#define FREQ 500                    //tempo che il led di inizio rimane acceso o spento
 #define SET_LEV 128
 #define MAX_DIFF 8
 #define INIT 0
@@ -180,7 +179,8 @@ void firstState() {
 //volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
 volatile void reset() {
   btn1->att_int(firstState);
-  Serial.println("GameOver");
+  Serial.println("GameOver :( score -> ");
+  Serial.print(score);  
   index = INIT;
   lengthOfSequence = INIT;
   state = INIT;
