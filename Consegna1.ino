@@ -51,6 +51,7 @@ int sequenceToGuess[SIZE];
 int index = INIT;
 int difficult;
 int freq;
+int score = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -106,9 +107,9 @@ void compareToSequence(int num) {
 
 void blinky(int pinToSwitchOn) {
   digitalWrite(pinToSwitchOn, HIGH);
-  delay(FREQ);
+  delay(freq);
   digitalWrite(pinToSwitchOn, LOW);
-  delay(FREQ);
+  delay(freq);
 }
 
 void showSequence() {
@@ -132,7 +133,6 @@ void guessSequence() {
 }
 //Se indovino incremento index, in modo che al prossimo passaggio il confronto venga fatto sul numero successivo della sequenza
 void guess() {
-  Serial.println(Timer1.read()/1000000);
   index++;
   // se l'indice è uguale alla lunghezza della sequenza, esegue la funzione  points, che assegna i punti
   if(index == lengthOfSequence){
@@ -142,10 +142,13 @@ void guess() {
 }
 
 void points() {
+  score += (Timer1.read()/1000000) * difficult;
   Timer1.stop();
   Timer1.restart();
-  Serial.println("punti");
-  Serial.print("\n");
+  Serial.print("difficult: ");
+  Serial.println(difficult);
+  Serial.print("punti: ");
+  Serial.println(score);
   state = FIRST;
   index = INIT;
 
@@ -167,6 +170,7 @@ void lose() {
   index = INIT;
   lengthOfSequence = INIT;
   state = INIT;
+  score = INIT;
 }
 
 void firstState() {
@@ -180,6 +184,7 @@ volatile void reset() {
   index = INIT;
   lengthOfSequence = INIT;
   state = INIT;
+  score = INIT;
   //Timer1.restart();
 }
 
