@@ -60,13 +60,15 @@ void setup() {
   btn2 = new ButtonImpl(BOTT2);
   btn3 = new ButtonImpl(BOTT3);
   pot = new Potentiometer(POT);
-  btn1->att_int(firstState);
-  
+  btn1->att_int(firstState);  
   Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
+  Timer1.stop();     
+  Timer1.restart();
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
+  
   init_condition();                           //Primo stato
   btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
   showSequence();                             //Secondo stato
@@ -74,12 +76,12 @@ void loop() {
   //state == SECOND ? guessSequence() : reset();
  
   Serial.println("Uscito dal guessSequence");
-  Serial.print("index: ");
-  Serial.println(index);
-  Serial.print("lengthOfSequence: ");
-  Serial.println(lengthOfSequence);
-  Serial.print("state: ");
-  Serial.println(state);
+//  Serial.print("index: ");
+//  Serial.println(index);
+//  Serial.print("lengthOfSequence: ");
+//  Serial.println(lengthOfSequence);
+//  Serial.print("state: ");
+//  Serial.println(state);
 }
 
 void init_condition() {
@@ -89,6 +91,7 @@ void init_condition() {
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
     ledw->switchOn();
+    Serial.println("Fermo qui");
     delay(FREQ);
     ledw->switchOff();
     delay(FREQ);   
@@ -97,15 +100,15 @@ void init_condition() {
 //Confronto la sequenza con i bottoni che premo  io, uno ad uno
 void compareToSequence(int num) {
   Serial.println("compareToSequence");
-  Serial.print("Sequenza di index: ");
-  Serial.println(sequenceToGuess[index]);
-  Serial.print("Numero ");
-  Serial.println(num);
-  Serial.print("index: ");
-  Serial.println(index);
-  Serial.print("lengthOfSequence: ");
-  Serial.println(lengthOfSequence);
-  
+//  Serial.print("Sequenza di index: ");
+//  Serial.println(sequenceToGuess[index]);
+//  Serial.print("Numero ");
+//  Serial.println(num);
+//  Serial.print("index: ");
+//  Serial.println(index);
+//  Serial.print("lengthOfSequence: ");
+//  Serial.println(lengthOfSequence);
+//  
   digitalWrite(num, HIGH);
   delay(BOUCING);
   digitalWrite(num, LOW);
@@ -136,14 +139,14 @@ void showSequence() {
 
 void guessSequence() {
   Timer1.resume();
-  while(state == SECOND && index < lengthOfSequence ) {
+  while(state == SECOND && index < lengthOfSequence ) {  // 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
   }
 }
 //Se indovino incremento index, in modo che al prossimo passaggio il confronto venga fatto sul numero successivo della sequenza
 void guess() {
-  Serial.println(Timer1.read());
+  Serial.println(Timer1.read()/1000000);
   index++;
   // se l'indice è uguale alla lunghezza della sequenza, esegue la funzione  points, che assegna i punti
   if(index == lengthOfSequence){
@@ -153,12 +156,18 @@ void guess() {
 }
 
 void points() {
-  Timer1.stop();
+   Timer1.stop();
+  Timer1.restart();
+ 
   Serial.println("punti");
   Serial.print("\n");
   state = FIRST;
   index = INIT;
-  Timer1.restart();
+  
+//  for(int i = 0; i < 10; i++) {
+//    delay(1000);
+//    Serial.println(Timer1.read()/1000);
+//  }
   //Timer1.setPeriod(TIME_TO_GUESS);  //Non fa un reset ma inizializza un nuovo periodo...genera anomalie nel sistema ovvero:
 }                                     //allo scadere del "vecchio periodo" si accende un led dei tre della sequenza, da quel momento si accende LEDW
 //funzione vuota
