@@ -71,7 +71,7 @@ void setup() {
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
-  Serial.println(Timer1.read()/1000000);
+  //Serial.println(Timer1.read()/1000000);
   init_condition();                           //Primo stato
   btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
   showSequence();                             //Secondo stato
@@ -141,15 +141,16 @@ void guess() {
 }
 
 void points() {
-  score += (Timer1.read()/1000000) * difficult;
+  //score += (Timer1.read()/1000000) * difficult;
   Timer1.stop();
-  Timer1.restart();
   Serial.print("difficult: ");
   Serial.println(difficult);
   Serial.print("punti: ");
   Serial.println(score);
   state = FIRST;
   index = INIT;
+  Timer1.initialize(TIME_TO_GUESS);
+  Timer1.attachInterrupt(reset);
 
   //Timer1.setPeriod(TIME_TO_GUESS);  //Non fa un reset ma inizializza un nuovo periodo...genera anomalie nel sistema ovvero:
 }                                     //allo scadere del "vecchio periodo" si accende un led dei tre della sequenza, da quel momento si accende LEDW
