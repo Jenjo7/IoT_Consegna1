@@ -161,13 +161,9 @@ void firstState() {
   Serial.println("Primo Interrupt");
   state = FIRST;
 }
-//volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
+
 void reset() {
-  cli();
-  delay(40);
   btn1->att_int(firstState);
-  delay(40);
-  sei();
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
   index = INIT;
