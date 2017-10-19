@@ -13,7 +13,7 @@ bool ButtonImpl::isPressed(){
 
 bool ButtonImpl::att_int(void (*func)(void) ){
   if(this->pin == 2 || this->pin == 3) {
-    attachInterrupt(digitalPinToInterrupt(pin), func, RISING);
+    attachInterrupt(digitalPinToInterrupt(pin), *func, RISING);
     return hasInterrupt = true;
   } else {
     return false;
