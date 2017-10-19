@@ -98,9 +98,7 @@ void compareToSequence(int num) {
   delay(BOUCING);
   digitalWrite(num, LOW);
   //controllo che l'indice sia minore della lunghezza della sequenza...controllo che eseguo già nella funzione chiamante, quindi forse è superfluo
-  if(index < lengthOfSequence) {
-    sequenceToGuess[index] == num ? guess() : reset();
-  }
+  sequenceToGuess[index] == num ? guess() : reset();
 }
 
 void blinky(int pinToSwitchOn) {
@@ -165,11 +163,11 @@ void firstState() {
 }
 //volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
 void reset() {
-  noInterrupts();
+  cli();
   delay(40);
   btn1->att_int(firstState);
   delay(40);
-  interrupts();
+  sei();
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
   index = INIT;
