@@ -64,10 +64,8 @@ void setup() {
   btn3 = new ButtonImpl(BOTT3);
   pot = new Potentiometer(POT);
   btn1->att_int(firstState);  
-  Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
+  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
-//  Timer1.stop();     
-//  Timer1.restart();
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
@@ -141,7 +139,8 @@ void guess() {
 }
 
 void points() {
-  //score += (Timer1.read()/1000000) * difficult;
+  score += (Timer1.read()/1000000) * difficult;
+  Timer1.restart();
   Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
@@ -149,11 +148,7 @@ void points() {
   Serial.println(score);
   state = FIRST;
   index = INIT;
-  Timer1.initialize(TIME_TO_GUESS);
-  Timer1.attachInterrupt(reset);
-
-  //Timer1.setPeriod(TIME_TO_GUESS);  //Non fa un reset ma inizializza un nuovo periodo...genera anomalie nel sistema ovvero:
-}                                     //allo scadere del "vecchio periodo" si accende un led dei tre della sequenza, da quel momento si accende LEDW
+}                                    
 //funzione vuota
 void empty() {
   
@@ -164,15 +159,6 @@ void setDifficult() {
   difficult = MAX_DIFF - freq/SET_LEV;
 }
 
-void lose() {
-  btn1->att_int(firstState);
-  Serial.println("GameOver");
-  index = INIT;
-  lengthOfSequence = INIT;
-  state = INIT;
-  score = INIT;
-}
-
 void firstState() {
   Serial.println("Primo Interrupt");
   state = FIRST;
@@ -180,12 +166,12 @@ void firstState() {
 //volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
 volatile void reset() {
   btn1->att_int(firstState);
-  Serial.println("GameOver :( score -> ");
-  Serial.print(score);  
+  Serial.print("GameOver :( score -> ");
+  Serial.println(score);  
   index = INIT;
   lengthOfSequence = INIT;
   state = INIT;
   score = INIT;
-  //Timer1.restart();
+  Timer1.restart();
 }
 
