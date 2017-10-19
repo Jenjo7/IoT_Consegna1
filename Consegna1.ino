@@ -122,7 +122,7 @@ void showSequence() {
 }
 
 void guessSequence() {
-  Timer1.resume();
+  Timer1.start();
   while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
@@ -139,8 +139,7 @@ void guess() {
 }
 
 void points() {
-  score += (Timer1.read()/1000000) * difficult;
-  Timer1.restart();
+//  score += (Timer1.read()/1000000) * difficult;
   Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
@@ -165,7 +164,9 @@ void firstState() {
 }
 //volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
 volatile void reset() {
+  noInterrupts();
   btn1->att_int(firstState);
+  interrupts();
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
   index = INIT;
