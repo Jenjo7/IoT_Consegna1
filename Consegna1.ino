@@ -64,14 +64,15 @@ void setup() {
   btn3 = new ButtonImpl(BOTT3);
   pot = new Potentiometer(POT);
   btn1->att_int(firstState);  
-  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
-  Timer1.initialize(TIME_TO_GUESS);
+//  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
+//  Timer1.initialize(TIME_TO_GUESS);
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
   //Serial.println(Timer1.read()/1000000);
   init_condition();                           //Primo stato
   btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
+  delay(40);
   showSequence();                             //Secondo stato
   guessSequence();                            //Terzo stato
   Serial.println("Uscito dal guessSequence");
@@ -79,7 +80,7 @@ void loop() {
 
 void init_condition() {
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
-  Timer1.stop();
+//  Timer1.stop();
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
     setDifficult();
@@ -122,7 +123,7 @@ void showSequence() {
 }
 
 void guessSequence() {
-  Timer1.start();
+//  Timer1.start();
   while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
@@ -140,7 +141,7 @@ void guess() {
 
 void points() {
 //  score += (Timer1.read()/1000000) * difficult;
-  Timer1.stop();
+//  Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
   Serial.print("punti: ");
@@ -163,9 +164,11 @@ void firstState() {
   state = FIRST;
 }
 //volatile perchè ho provato a verificare che non si generassero conflitti fra interrupt e altre funzioni che la chiamano
-volatile void reset() {
+void reset() {
   noInterrupts();
+  delay(40);
   btn1->att_int(firstState);
+  delay(40);
   interrupts();
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
@@ -173,6 +176,6 @@ volatile void reset() {
   lengthOfSequence = INIT;
   state = INIT;
   score = INIT;
-  Timer1.restart();
+//  Timer1.restart();
 }
 
