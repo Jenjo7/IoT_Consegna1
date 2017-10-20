@@ -45,7 +45,7 @@ Button* btn3;
 Potentiometer* pot;
 
 int lengthOfSequence = INIT;
-int state = INIT;
+volatile int state = INIT;
 int sequenceToGuess[SIZE];
 int index = INIT;
 int difficult;
@@ -77,9 +77,13 @@ void loop() {
   showSequence();                             //Secondo stato
   guessSequence();                            //Terzo stato
   Serial.println("Uscito dal guessSequence");
+  if(lengthOfSequence == 0) {
+    state = INIT;
+  }
 }
 
 void init_condition() {
+//  btn1->att_int(firstState);
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
   Timer1.stop();
   //questo codice verrà messo in una funzione che riutilizzerò
@@ -140,6 +144,7 @@ void guess() {
 
 void points() {
 //  score += (Timer1.read()/1000000) * difficult;
+
   Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
@@ -161,18 +166,24 @@ void setDifficult() {
 void firstState() {
   if(state == INIT) {
     Serial.println("Primo Interrupt");
+    Serial.print("State: ");
+    Serial.println(state);
     state = FIRST;
   }
 }
 
 void reset() {
+  Serial.print("State: ");
+  Serial.println(state);
   btn1->att_int(firstState);
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
   index = INIT;
   lengthOfSequence = INIT;
-  state = INIT;
   score = INIT;
+  state = INIT;
+  
+  
 //  Timer1.restart();
 }
 
