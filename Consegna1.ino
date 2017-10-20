@@ -14,7 +14,6 @@
 #include "Potentiometer.h"
 
 //Definisco le macro dei miei componenti
-#define POT A0
 #define LED1 11
 #define LED2 12
 #define LED3 13
@@ -64,7 +63,7 @@ void setup() {
   btn1 = new ButtonImpl(BOTT1);
   btn2 = new ButtonImpl(BOTT2);
   btn3 = new ButtonImpl(BOTT3);
-  pot = new Potentiometer(POT);
+  pot = new Potentiometer(A0);
   btn1->att_int(firstState);  
   Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
@@ -83,7 +82,6 @@ void loop() {
                 guessSequence();                            //Terzo stato
                 break;
   }
-  //Serial.println("Uscito dal guessSequence");
 }
 
 void init_condition() {
@@ -100,12 +98,11 @@ void init_condition() {
     delay(freq);   
   }
 }
-//Confronto la sequenza con i bottoni che premo  io, uno ad uno
+//Confronto la sequenza con i bottoni che premo io, uno ad uno
 void compareToSequence(int num) {
   digitalWrite(num, HIGH);
   delay(BOUCING);
   digitalWrite(num, LOW);
-  //controllo che l'indice sia minore della lunghezza della sequenza...controllo che eseguo già nella funzione chiamante, quindi forse è superfluo
   sequenceToGuess[index] == num ? guess() : reset();
 }
 
@@ -119,7 +116,6 @@ void blinky(int pinToSwitchOn) {
 void showSequence() {
   delay(500);
   for(int i = 0; i < lengthOfSequence ; i++) {
-    Serial.println("primo for");
     blinky(sequenceToGuess[i]);
   }
   lengthOfSequence++;
@@ -131,23 +127,12 @@ void showSequence() {
 }
 
 void guessSequence() {
-//  Timer1.start();
-//  while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     if(!gameover) {
       btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();  
     } else {
       reset();
     }
-    
-//    if(btn1->isPressed()){
-//      compareToSequence(LED1);
-//    } else if(btn2->isPressed()) {
-//      compareToSequence(LED2);
-//    } else if(btn3->isPressed()) {
-//      compareToSequence(LED3);
-//    }
-//  }
 }
 //Se indovino incremento index, in modo che al prossimo passaggio il confronto venga fatto sul numero successivo della sequenza
 void guess() {
@@ -163,10 +148,6 @@ void points() {
   Timer1.stop();
   Timer1.setPeriod(5000000);
   Timer1.stop();
-  Serial.print("difficult: ");
-  Serial.println(difficult);
-  Serial.print("punti: ");
-  Serial.println(score);
   state = FIRST;
   index = INIT;
 }                                    
