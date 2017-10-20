@@ -43,14 +43,14 @@ Button* btn3;
 
 Potentiometer* pot;
 
-int lengthOfSequence = INIT;
+int lengthOfSequence = INIT;      
 int state = INIT;
 int sequenceToGuess[SIZE];
 int index = INIT;
 int difficult;
 int freq;
 int score = 0;
-bool gameover;
+bool gameover;    //modificabile solo nella funzione init_condition, e dall'interrupt del timer1
 
 
 void setup() {
@@ -66,7 +66,7 @@ void setup() {
   pot = new Potentiometer(A0);
   btn1->att_int(firstState);  
   Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
-  Timer1.initialize(TIME_TO_GUESS);
+  Timer1.initialize(TIME_TO_GUESS);          //Quando viene eseguito, non fa altro che settare gameover a true, e il gioco finisce
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
@@ -87,7 +87,7 @@ void loop() {
 void init_condition() {
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
   Timer1.stop();
-  gameover = false;
+  gameover = false;       //Ogni volta che perdo, e reinizio una partita, deve essere false.
   Serial.println("Welcome to Follow the Light!");
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
@@ -112,13 +112,13 @@ void blinky(int pinToSwitchOn) {
   digitalWrite(pinToSwitchOn, LOW);
   delay(freq);
 }
-
+//Mostra la sequenza contenuta nel vettore
 void showSequence() {
   delay(500);
   for(int i = 0; i < lengthOfSequence ; i++) {
     blinky(sequenceToGuess[i]);
   }
-  lengthOfSequence++;
+  lengthOfSequence++;                            //Aggiungo un led alla sequenza     
   int pinToSwitchOn = random(LED1, LED3 + 1);
   sequenceToGuess[lengthOfSequence - 1] = pinToSwitchOn;
   blinky(pinToSwitchOn);
@@ -142,22 +142,22 @@ void guess() {
     points();
   }
 }
-
+//Metodo che assegna i punti e riporta alla visualizzazione della sequenza con l'aggiunta di un led
 void points() {
   score += lengthOfSequence * difficult;
+  Timer1.stop();                              //Quando indovino stoppo il timer, so no parte l'interrupt
+  Timer1.setPeriod(5000000);                  //Codice opzionale
   Timer1.stop();
-  Timer1.setPeriod(5000000);
-  Timer1.stop();
-  state = FIRST;
-  index = INIT;
+  state = FIRST;                              //Permette di tornare a showSequence()
+  index = INIT;                               //Permette di scorrre il vettore che contiene i numeri della sequenza
 }                                    
 //funzione vuota
 void empty() {
   
 }
-
+//Setta difficolta del gioco (velocità col quale la sequenza si manifesta) e il moltiplicatore
 void setDifficult() {
-  freq = pot->readValue();
+  freq = pot->readValue();          
   difficult = MAX_DIFF - freq/SET_LEV;
 }
 
@@ -171,10 +171,10 @@ void firstState() {
 void lose() {
   gameover = true;
 }
-
+//Metodo che riporta a default tutti i parametri
 void reset() {
-  btn1->att_int(firstState);
-  Serial.print("GameOver :( score -> ");
+  btn1->att_int(firstState);                    //Riattacco l'interrupt a btn1
+  Serial.print("GameOver :( score -> ");        //Stampa seriale dei punti
   Serial.println(score);  
   index = INIT;
   lengthOfSequence = INIT;
