@@ -69,23 +69,25 @@ void setup() {
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
-//  btn1->att_int(firstState);
-  //Serial.println(Timer1.read()/1000000);
-  init_condition();                           //Primo stato
-  btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
-  delay(40);
-  showSequence();                             //Secondo stato
-  guessSequence();                            //Terzo stato
-  Serial.println("Uscito dal guessSequence");
-  if(lengthOfSequence == 0) {
-    state = INIT;
+  switch(state) {
+    case INIT:
+                init_condition();                           //Primo stato
+                break;
+    case FIRST:
+                btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
+                showSequence();                             //Secondo stato
+                break;
+    case SECOND:
+                guessSequence();                            //Terzo stato
+                break;
   }
+  //Serial.println("Uscito dal guessSequence");
 }
 
 void init_condition() {
-//  btn1->att_int(firstState);
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
   Timer1.stop();
+  Serial.println("Welcome to Follow the Light!");
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
     setDifficult();
@@ -114,6 +116,8 @@ void blinky(int pinToSwitchOn) {
 }
 
 void showSequence() {
+  delay(500);
+  Serial.println("Ready!");
   for(int i = 0; i < lengthOfSequence ; i++) {
     Serial.println("primo for");
     blinky(sequenceToGuess[i]);
@@ -138,14 +142,13 @@ void guess() {
   // se l'indice è uguale alla lunghezza della sequenza, esegue la funzione  points, che assegna i punti
   if(index == lengthOfSequence){
     points();
-    delay(500);
   }
 }
 
 void points() {
-//  score += (Timer1.read()/1000000) * difficult;
-
+  score += lengthOfSequence * difficult;
   Timer1.stop();
+  Timer1.setPeriod(5000000);
   Serial.print("difficult: ");
   Serial.println(difficult);
   Serial.print("punti: ");
@@ -173,8 +176,6 @@ void firstState() {
 }
 
 void reset() {
-  Serial.print("State: ");
-  Serial.println(state);
   btn1->att_int(firstState);
   Serial.print("GameOver :( score -> ");
   Serial.println(score);  
@@ -182,8 +183,5 @@ void reset() {
   lengthOfSequence = INIT;
   score = INIT;
   state = INIT;
-  
-  
-//  Timer1.restart();
 }
 
