@@ -45,12 +45,14 @@ Button* btn3;
 Potentiometer* pot;
 
 int lengthOfSequence = INIT;
-volatile int state = INIT;
+int state = INIT;
 int sequenceToGuess[SIZE];
 int index = INIT;
 int difficult;
 int freq;
 int score = 0;
+bool gameover;
+
 
 void setup() {
   Serial.begin(9600);
@@ -64,7 +66,7 @@ void setup() {
   btn3 = new ButtonImpl(BOTT3);
   pot = new Potentiometer(POT);
   btn1->att_int(firstState);  
-  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
+  Timer1.attachInterrupt(lose);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
   Timer1.initialize(TIME_TO_GUESS);
 }
 //Note: ancora non gestico i punti e il potenziometro
@@ -87,12 +89,12 @@ void loop() {
 void init_condition() {
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
   Timer1.stop();
+  gameover = false;
   Serial.println("Welcome to Follow the Light!");
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
     setDifficult();
     ledw->switchOn();
-    Serial.println("Fermo qui");
     delay(freq);
     ledw->switchOff();
     delay(freq);   
@@ -100,7 +102,6 @@ void init_condition() {
 }
 //Confronto la sequenza con i bottoni che premo  io, uno ad uno
 void compareToSequence(int num) {
-  Serial.println("compareToSequence");
   digitalWrite(num, HIGH);
   delay(BOUCING);
   digitalWrite(num, LOW);
@@ -117,7 +118,6 @@ void blinky(int pinToSwitchOn) {
 
 void showSequence() {
   delay(500);
-  Serial.println("Ready!");
   for(int i = 0; i < lengthOfSequence ; i++) {
     Serial.println("primo for");
     blinky(sequenceToGuess[i]);
@@ -127,14 +127,27 @@ void showSequence() {
   sequenceToGuess[lengthOfSequence - 1] = pinToSwitchOn;
   blinky(pinToSwitchOn);
   state = SECOND;
+  Timer1.start();
 }
 
 void guessSequence() {
-  Timer1.start();
-  while(state == SECOND) {  // && index < lengthOfSequence 
+//  Timer1.start();
+//  while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
-    btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
-  }
+    if(!gameover) {
+      btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();  
+    } else {
+      reset();
+    }
+    
+//    if(btn1->isPressed()){
+//      compareToSequence(LED1);
+//    } else if(btn2->isPressed()) {
+//      compareToSequence(LED2);
+//    } else if(btn3->isPressed()) {
+//      compareToSequence(LED3);
+//    }
+//  }
 }
 //Se indovino incremento index, in modo che al prossimo passaggio il confronto venga fatto sul numero successivo della sequenza
 void guess() {
@@ -149,6 +162,7 @@ void points() {
   score += lengthOfSequence * difficult;
   Timer1.stop();
   Timer1.setPeriod(5000000);
+  Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
   Serial.print("punti: ");
@@ -168,11 +182,13 @@ void setDifficult() {
 
 void firstState() {
   if(state == INIT) {
-    Serial.println("Primo Interrupt");
-    Serial.print("State: ");
-    Serial.println(state);
+    Serial.println("Ready!");
     state = FIRST;
   }
+}
+
+void lose() {
+  gameover = true;
 }
 
 void reset() {
