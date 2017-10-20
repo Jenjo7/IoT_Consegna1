@@ -64,11 +64,12 @@ void setup() {
   btn3 = new ButtonImpl(BOTT3);
   pot = new Potentiometer(POT);
   btn1->att_int(firstState);  
-//  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
-//  Timer1.initialize(TIME_TO_GUESS);
+  Timer1.attachInterrupt(reset);              //Mettere attachInterrupt nel loop o altre funzioni (che non siano setup) da problemi, del tipo che parte l'interrupt
+  Timer1.initialize(TIME_TO_GUESS);
 }
 //Note: ancora non gestico i punti e il potenziometro
 void loop() {
+//  btn1->att_int(firstState);
   //Serial.println(Timer1.read()/1000000);
   init_condition();                           //Primo stato
   btn1->dett_int(BOTT1);                      //Disattivo l'interrupt legato al bottone 1, tramite metodo implementato in ButtonImpl.cpp
@@ -80,7 +81,7 @@ void loop() {
 
 void init_condition() {
   //Il timer parte subito dopo  l'inizio del loop, quindi come prima cosa lo fermo
-//  Timer1.stop();
+  Timer1.stop();
   //questo codice verrà messo in una funzione che riutilizzerò
   while(state == INIT) {
     setDifficult();
@@ -121,7 +122,7 @@ void showSequence() {
 }
 
 void guessSequence() {
-//  Timer1.start();
+  Timer1.start();
   while(state == SECOND) {  // && index < lengthOfSequence 
     //Controllo che bottone viene premuto, se nessuno di essi viene premuto, eseuguo una funzione vuota ( empty() ) per rispettare la sintassi deella ternaria.
     btn1->isPressed() ? compareToSequence(LED1) : btn2->isPressed() ? compareToSequence(LED2) : btn3->isPressed() ? compareToSequence(LED3) : empty();
@@ -139,7 +140,7 @@ void guess() {
 
 void points() {
 //  score += (Timer1.read()/1000000) * difficult;
-//  Timer1.stop();
+  Timer1.stop();
   Serial.print("difficult: ");
   Serial.println(difficult);
   Serial.print("punti: ");
@@ -158,8 +159,10 @@ void setDifficult() {
 }
 
 void firstState() {
-  Serial.println("Primo Interrupt");
-  state = FIRST;
+  if(state == INIT) {
+    Serial.println("Primo Interrupt");
+    state = FIRST;
+  }
 }
 
 void reset() {
