@@ -10,13 +10,10 @@ public:
   bool isPressed();
   bool att_int(void (*func)(void) );
   void dett_int(int);
-  bool isInterruptStart();
   int getPin();
 
 private:
   int pin;
-  bool hasInterrupt;
-
 };
 
 #endif
