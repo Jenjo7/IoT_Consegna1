@@ -146,8 +146,8 @@ void guess() {
 void points() {
   score += lengthOfSequence * difficult;
   Timer1.stop();                              //Quando indovino stoppo il timer, so no parte l'interrupt
-  Timer1.setPeriod(5000000);                  //Codice opzionale
-  Timer1.stop();
+//  Timer1.setPeriod(5000000);                  //Codice opzionale
+//  Timer1.stop();
   state = FIRST;                              //Permette di tornare a showSequence()
   index = INIT;                               //Permette di scorrre il vettore che contiene i numeri della sequenza
 }                                    
