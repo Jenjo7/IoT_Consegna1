@@ -4,6 +4,12 @@
  * Savini Gianni 731806
  * 
  * Follow the Light
+ * 
+ * Note: per un malfunzionamento della libreria, ho aggiunto un metodo
+ * che effutttua un reset del Timer1 senza attivare l'interrupt (cosa 
+ * che invece fa il metodo start() di libreria). Questo metodo è da
+ * aggiungere a TimerOne.h della libreria TimerOne scaricata dall'IDE:
+ * 
  * ===================================================================
  */
 
@@ -123,7 +129,7 @@ void showSequence() {
   sequenceToGuess[lengthOfSequence - 1] = pinToSwitchOn;
   blinky(pinToSwitchOn);
   state = SECOND;
-  Timer1.start();
+  Timer1.restartOne();
 }
 
 void guessSequence() {
