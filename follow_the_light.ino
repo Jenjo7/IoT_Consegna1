@@ -9,7 +9,12 @@
  * che effutttua un reset del Timer1 senza attivare l'interrupt (cosa 
  * che invece fa il metodo start() di libreria). Questo metodo è da
  * aggiungere a TimerOne.h della libreria TimerOne scaricata dall'IDE:
- * 
+ 
+ void restartOne() __attribute__((always_inline)) {
+ TCCR1B = 0;
+ TCNT1 = 1;    // TODO: does this cause an undesired interrupt?
+ resume();
+ }
  * ===================================================================
  */
 
